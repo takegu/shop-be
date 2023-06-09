@@ -3,17 +3,20 @@ import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-al
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'ProductServiceStack', {
-  env: { region: 'eu-west-1' },
+  env: { region: process.env.PRODUCT_AWS_REGION },
 });
 
 const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
   environment: {
-    PRODUCT_AWS_REGION: 'eu-west-1',
+    PRODUCT_AWS_REGION: process.env.PRODUCT_AWS_REGION!,
   }
 };
 
