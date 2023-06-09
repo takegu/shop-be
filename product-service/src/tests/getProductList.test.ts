@@ -1,6 +1,6 @@
 import { handler } from '../handlers/getProductList';
 import { buildResponce } from '../utils';
-import { products } from '../mocks/data';
+import { products } from '../../mocks/data';
 
 // Mock the buildResponce function
 jest.mock('../utils', () => ({

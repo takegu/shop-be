@@ -1,5 +1,5 @@
 import { handler } from '../handlers/getProductById';
-import { products } from '../mocks/data';
+import { products } from '../../mocks/data';
 
 describe('Product Handler', () => {
   test('returns a product when a valid productId is provided', async () => {

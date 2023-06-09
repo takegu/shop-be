@@ -1,5 +1,5 @@
 import { buildResponce } from "../utils";
-import { products, Product } from "../mocks/data"
+import { products, Product } from "../../mocks/data"
 
 export const handler = async (event: any) => {
   try {
