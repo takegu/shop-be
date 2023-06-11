@@ -4,7 +4,6 @@ import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import dotenv from 'dotenv';
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 dotenv.config();
 
@@ -14,15 +13,10 @@ const stack = new cdk.Stack(app, 'ProductServiceStack', {
   env: { region: process.env.PRODUCT_AWS_REGION },
 });
 
-const productsTable = dynamodb.Table.fromTableName(stack, 'ProductsTable', 'products_table');
-const stockTable = dynamodb.Table.fromTableName(stack, 'StockTable', 'stock_table');
-
 const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
   environment: {
     PRODUCT_AWS_REGION: process.env.PRODUCT_AWS_REGION!,
-    PRODUCTS_TABLE_NAME: productsTable.tableName,
-    STOCK_TABLE_NAME: stockTable.tableName,
     DB_HOST: process.env.DB_HOST!,
     DB_PORT: process.env.DB_PORT!,
     DB_NAME: process.env.DB_NAME!,
@@ -68,14 +62,6 @@ const api = new apiGateway.HttpApi(stack, 'ProductApi', {
     allowMethods: [apiGateway.CorsHttpMethod.ANY],
   }
 });
-
-productsTable.grantReadData(getProductList);
-productsTable.grantReadData(getProductById);
-productsTable.grantReadWriteData(createProduct);
-
-stockTable.grantReadData(getProductList);
-stockTable.grantReadData(getProductById);
-stockTable.grantReadWriteData(createProduct);
 
 api.addRoutes({
   integration: new HttpLambdaIntegration('GetProductListIntegration', getProductList),
