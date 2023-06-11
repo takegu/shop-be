@@ -4,11 +4,11 @@ import { client } from "../dynamodb";
 
 export const handler = async (event: any) => {
   const productsParams = {
-    TableName: 'products_table',
+    TableName: process.env.PRODUCTS_TABLE_NAME,
   };
 
   const sctockParams = {
-    TableName: 'stock_table',
+    TableName: process.env.STOCK_TABLE_NAME,
   };
 
   try {

@@ -7,14 +7,14 @@ export const handler = async (event: any) => {
     const { productId } = event.pathParameters;
 
     const productsParams = {
-      TableName: 'products_table',
+      TableName: process.env.PRODUCTS_TABLE_NAME,
       Key: {
         product_id: { 'S': productId },
       }
     };
 
     const stockParams = {
-      TableName: 'stock_table',
+      TableName: process.env.STOCK_TABLE_NAME,
       Key: {
         product_id: { 'S': productId },
       }

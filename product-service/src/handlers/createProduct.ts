@@ -16,7 +16,7 @@ export const handler = async (event: any) => {
       const id = uuidv4();
 
       const productParams: PutItemCommandInput = {
-        TableName: 'products_table',
+        TableName: process.env.PRODUCTS_TABLE_NAME,
         Item: {
           product_id: { S: id },
           title: { S: title },
@@ -26,7 +26,7 @@ export const handler = async (event: any) => {
       };
 
       const stockParams: PutItemCommandInput = {
-        TableName: 'stock_table',
+        TableName: process.env.STOCK_TABLE_NAME,
         Item: {
           product_id: { S: id },
           count: { N: count },
