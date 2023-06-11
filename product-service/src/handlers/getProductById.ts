@@ -3,6 +3,8 @@ import { GetItemCommand } from '@aws-sdk/client-dynamodb';
 import { client } from "../dynamodb";
 
 export const handler = async (event: any) => {
+  console.log('GetProductById: ', event);
+
   try {
     const { productId } = event.pathParameters;
 
@@ -22,17 +24,13 @@ export const handler = async (event: any) => {
 
     const productCommand = new GetItemCommand(productsParams);
     const productResult = await client.send(productCommand);
-    console.log('Get product by id from products table: ', productResult);
 
     const stockCommand = new GetItemCommand(stockParams);
     const stockResult = await client.send(stockCommand);
-    console.log('Get product by id from products table: ', stockResult);
 
     const productItem = removeAttributeValueFromItem(productResult?.Item);
     const stockItem = removeAttributeValueFromItem(stockResult?.Item);
     const result = { ...productItem, ...stockItem };
-
-    console.log('Joined product object: ', result);
 
     if (!result) {
       return buildResponce(404, {

@@ -4,8 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { client } from "../dynamodb";
 
 export const handler = async (event: any) => {
-  try {
+  console.log('CreateProduct: ', event);
 
+  try {
     if (event?.body) {
       const { title, description, price, count } = JSON.parse(event.body);
 
