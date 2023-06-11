@@ -25,12 +25,15 @@ export const checkBodyParameters = (requiredParameters: any[], data: any) => {
   });
 };
 
-export const removeAttributeValueFromItems = (result: ScanCommandOutput) => {
-  return result.Items?.map((item) => {
-    const transformedItem: { [key: string]: any } = {};
+export const removeAttributeValueFromItem = (item: any) => {
+  const transformedItem: { [key: string]: any } = {};
     for (const [key, value] of Object.entries(item)) {
       transformedItem[key] = (value as AttributeValue).S || (value as AttributeValue).N || (value as AttributeValue).BOOL || (value as AttributeValue).NULL || (value as AttributeValue).SS || (value as AttributeValue).NS || (value as AttributeValue).L || (value as AttributeValue).M;
     }
     return transformedItem;
-  })
-}
+};
+
+export const removeAttributeValueFromItems = (result: ScanCommandOutput) => {
+  return result.Items?.map((item) => removeAttributeValueFromItem(item));
+};
+
