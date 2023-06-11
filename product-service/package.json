@@ -12,7 +12,10 @@
     "cdk:bootstrap": "npx cdk bootstrap --profile aws-rs",
     "cdk:deploy": "npx cdk deploy --profile aws-rs",
     "cdk:remove": "npx cdk destroy --profile aws-rs",
-    "aws:schema": "aws apigatewayv2 export-api --api-id 4pocqddhaf --output-type YAML --specification OAS30  --stage-name '$default' swagger.yaml --profile aws-rs"
+    "aws:schema": "aws apigatewayv2 export-api --api-id 4pocqddhaf --output-type YAML --specification OAS30  --stage-name '$default' swagger.yaml --profile aws-rs",
+    "rds:create-tables": "ts-node ./src/scripts/createTables.ts",
+    "rds:autofill": "ts-node ./src/scripts/fillTables.ts"
+
   },
   "devDependencies": {
     "@types/jest": "^29.5.1",
@@ -32,7 +35,9 @@
     "aws-cdk-lib": "2.81.0",
     "constructs": "^10.0.0",
     "dotenv": "^16.1.4",
+    "knex": "^2.4.2",
     "lodash": "^4.17.21",
+    "pg": "^8.11.0",
     "source-map-support": "^0.5.21",
     "uuid": "^9.0.0"
   }
