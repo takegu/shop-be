@@ -1,14 +1,4 @@
-export type Product = {
-  description: string,
-  product_id: string,
-  price: number,
-  title: string,
-};
-
-export type Stock = {
-  product_id: string,
-  count: number,
-};
+import { Product, Stock } from "../models/Product";
 
 export const products: Product[] = [
   {
@@ -45,23 +35,23 @@ export const products: Product[] = [
 
 export const stock: Stock[] = [
   {
-    product_id: "7589ec3b-a12d-45c6-8346-fd73c49b90bb",
-    count: 29.99,
+    id: "7589ec3b-a12d-45c6-8346-fd73c49b90bb",
+    count: 29,
   },
   {
-    product_id: "8543ec7d-d15f-42c8-9254-fa63c44c70cc",
-    count: 49.99,
+    id: "8543ec7d-d15f-42c8-9254-fa63c44c70cc",
+    count: 49,
   },
   {
-    product_id: "9512ec8f-e16a-46c9-8163-fb72c45d60dd",
-    count: 89.99,
+    id: "9512ec8f-e16a-46c9-8163-fb72c45d60dd",
+    count: 89,
   },
   {
-    product_id: "6524ec2a-b10f-48c7-9343-fc39c48a80ee",
-    count: 12.99,
+    id: "6524ec2a-b10f-48c7-9343-fc39c48a80ee",
+    count: 12,
   },
   {
-    product_id: "4567ec4b-b11d-48c5-9346-fc73c48a80ff",
-    count: 39.99,
+    id: "4567ec4b-b11d-48c5-9346-fc73c48a80ff",
+    count: 39,
   }
 ];

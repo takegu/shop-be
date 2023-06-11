@@ -23,7 +23,24 @@ const sharedLambdaProps: Partial<NodejsFunctionProps> = {
     PRODUCT_AWS_REGION: process.env.PRODUCT_AWS_REGION!,
     PRODUCTS_TABLE_NAME: productsTable.tableName,
     STOCK_TABLE_NAME: stockTable.tableName,
-  }
+    DB_HOST: process.env.DB_HOST!,
+    DB_PORT: process.env.DB_PORT!,
+    DB_NAME: process.env.DB_NAME!,
+    DB_USERNAME: process.env.DB_USERNAME!,
+    DB_PASSWORD: process.env.DB_PASSWORD!,
+  },
+  bundling: {
+    externalModules: [
+      'pg-native',
+      'sqlite3',
+      'pg-query-stream',
+      'oracledb',
+      'better-sqlite3',
+      'tedious',
+      'mysql',
+      'mysql2',
+    ],
+  },
 };
 
 const getProductList = new NodejsFunction(stack, 'GetProductListLambda', {

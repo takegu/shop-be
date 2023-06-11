@@ -1,6 +1,6 @@
-import PostgreClient from '../db/index';
+import PostgreClient from './db.connect.local';
 
-async function createTables() {
+async function createProductsTable() {
   try {
     await PostgreClient.schema.createTable('products', (table) => {
       table.string('product_id').primary();
@@ -14,10 +14,12 @@ async function createTables() {
   } finally {
     PostgreClient.destroy();
   }
+}
 
+async function createStockTable() {
   try {
     await PostgreClient.schema.createTable('stock', (table) => {
-      table.string('product_id').primary();
+      table.string('id').primary();
       table.integer('count');
     });
     console.log('Table stock created successfully!');
@@ -28,4 +30,5 @@ async function createTables() {
   }
 }
 
-createTables();
+createProductsTable();
+createStockTable();

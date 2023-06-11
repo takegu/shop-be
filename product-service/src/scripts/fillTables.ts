@@ -1,7 +1,7 @@
-import PostgreClient from '../db/index';
-import { products, stock } from '../../mocks/data';
+import PostgreClient from './db.connect.local';
+import { products, stock } from '../mocks/data';
 
-async function insertData() {
+async function insertDataToProducts() {
   try {
     await PostgreClient('products').insert(products);
     console.log('Data products inserted successfully.');
@@ -10,7 +10,9 @@ async function insertData() {
   } finally {
     PostgreClient.destroy();
   }
+}
 
+async function insertDataToStock() {
   try {
     await PostgreClient('stock').insert(stock);
     console.log('Data stock inserted successfully.');
@@ -21,4 +23,19 @@ async function insertData() {
   }
 }
 
-insertData();
+export const getProductsList = async () => {
+  try {
+    const products = await PostgreClient('products')
+      .join('stock', 'products.product_id', 'stock.id')
+      .select('products.*', 'stock.count');
+
+    return products;
+  } catch (error) {
+    console.error('Error retrieving data:', error);
+    throw error;
+  } finally {
+    await PostgreClient.destroy();
+  }
+};
+
+getProductsList();
