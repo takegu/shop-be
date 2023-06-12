@@ -1,5 +1,5 @@
 import PostgreClient from './db.connect.local';
-import { products, stock } from '../mocks/data';
+import { products, stock } from '../../mocks/data';
 
 async function insertDataToProducts() {
   try {
