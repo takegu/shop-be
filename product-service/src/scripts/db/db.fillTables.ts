@@ -23,19 +23,5 @@ async function insertDataToStock() {
   }
 }
 
-export const getProductsList = async () => {
-  try {
-    const products = await PostgreClient('products')
-      .join('stock', 'products.product_id', 'stock.id')
-      .select('products.*', 'stock.count');
-
-    return products;
-  } catch (error) {
-    console.error('Error retrieving data:', error);
-    throw error;
-  } finally {
-    await PostgreClient.destroy();
-  }
-};
-
-getProductsList();
+insertDataToStock();
+insertDataToProducts();

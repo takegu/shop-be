@@ -3,7 +3,7 @@ import { products } from '../mocks/data';
 
 describe('Product Handler', () => {
   test('returns a product when a valid productId is provided', async () => {
-    const productId = products[0].id;
+    const productId = products[0].product_id;
     const event = { pathParameters: { productId } };
 
     const response = await handler(event);

@@ -6,6 +6,8 @@ export const handler = async (event: any) => {
 
   try {
     const result = await getProductsList();
+    console.log(result);
+    
 
     return buildResponce(200, result);
   } catch (err: any) {
