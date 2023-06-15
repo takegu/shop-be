@@ -4,17 +4,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "cdk:deploy": "npx cdk deploy --profile aws-rs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-cdk/aws-apigatewayv2-alpha": "^2.83.1-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.83.1-alpha.0",
+    "@aws-sdk/client-s3": "^3.352.0",
+    "@aws-sdk/s3-request-presigner": "^3.352.0",
     "aws-cdk-lib": "^2.83.1",
+    "constructs": "^10.2.52",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@types/node": "^20.3.1",
     "@types/lodash": "^4.14.195",
+    "@types/node": "^20.3.1",
+    "aws-cdk": "^2.84.0",
     "dotenv": "^16.1.4"
   }
 }
