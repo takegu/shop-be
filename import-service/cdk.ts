@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3n from "aws-cdk-lib/aws-s3-notifications";
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -31,6 +32,19 @@ const importProductsFile = new NodejsFunction(stack, 'ImportProductsFileLambda',
 });
 
 bucket.grantReadWrite(importProductsFile);
+
+const importFileParser = new NodejsFunction(stack, 'ImportFileParserLambda', {
+  ...sharedLambdaProps,
+  functionName: 'importFileParser',
+  entry: 'src/handlers/importFileParser.ts'
+});
+
+bucket.grantReadWrite(importFileParser);
+bucket.addEventNotification(
+  s3.EventType.OBJECT_CREATED,
+  new s3n.LambdaDestination(importFileParser),
+  { prefix: 'uploaded/' }
+);
 
 const api = new apiGateway.HttpApi(stack, 'ImportApi', {
   corsPreflight: {
