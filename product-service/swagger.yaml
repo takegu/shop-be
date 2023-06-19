@@ -1,7 +1,7 @@
 openapi: "3.0.1"
 info:
   title: "ProductApi"
-  version: "2023-06-04 17:12:08UTC"
+  version: "2023-06-11 11:12:43UTC"
 servers:
 - url: "https://4pocqddhaf.execute-api.eu-west-1.amazonaws.com/{basePath}"
   variables:
@@ -26,6 +26,16 @@ paths:
         httpMethod: "POST"
         uri: "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:158561360962:function:getProductList/invocations"
         connectionType: "INTERNET"
+    post:
+      responses:
+        default:
+          description: "Default response for POST /products"
+      x-amazon-apigateway-integration:
+        payloadFormatVersion: "2.0"
+        type: "aws_proxy"
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:158561360962:function:createProduct/invocations"
+        connectionType: "INTERNET"
   /products/{productId}:
     get:
       responses:
@@ -44,20 +54,6 @@ paths:
       required: true
       schema:
         type: "string"
-components:
-  x-amazon-apigateway-integrations:
-    unusedIntegration_zput3av:
-      payloadFormatVersion: "2.0"
-      type: "aws_proxy"
-      httpMethod: "POST"
-      uri: "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:158561360962:function:getProductList/invocations"
-      connectionType: "INTERNET"
-    unusedIntegration_emogcrc:
-      payloadFormatVersion: "2.0"
-      type: "aws_proxy"
-      httpMethod: "POST"
-      uri: "arn:aws:apigateway:eu-west-1:lambda:path/2015-03-31/functions/arn:aws:lambda:eu-west-1:158561360962:function:getProductById/invocations"
-      connectionType: "INTERNET"
 x-amazon-apigateway-cors:
   allowMethods:
   - "*"

@@ -3,18 +3,38 @@ import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-al
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'ProductServiceStack', {
-  env: { region: 'eu-west-1' },
+  env: { region: process.env.PRODUCT_AWS_REGION },
 });
 
 const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
   environment: {
-    PRODUCT_AWS_REGION: 'eu-west-1',
-  }
+    PRODUCT_AWS_REGION: process.env.PRODUCT_AWS_REGION!,
+    DB_HOST: process.env.DB_HOST!,
+    DB_PORT: process.env.DB_PORT!,
+    DB_NAME: process.env.DB_NAME!,
+    DB_USERNAME: process.env.DB_USERNAME!,
+    DB_PASSWORD: process.env.DB_PASSWORD!,
+  },
+  bundling: {
+    externalModules: [
+      'pg-native',
+      'sqlite3',
+      'pg-query-stream',
+      'oracledb',
+      'better-sqlite3',
+      'tedious',
+      'mysql',
+      'mysql2',
+    ],
+  },
 };
 
 const getProductList = new NodejsFunction(stack, 'GetProductListLambda', {
@@ -27,6 +47,12 @@ const getProductById = new NodejsFunction(stack, 'GetProductBuIdLambda', {
   ...sharedLambdaProps,
   functionName: 'getProductById',
   entry: 'src/handlers/getProductById.ts',
+});
+
+const createProduct = new NodejsFunction(stack, 'CreateProduct', {
+  ...sharedLambdaProps,
+  functionName: 'createProduct',
+  entry: 'src/handlers/createProduct.ts',
 });
 
 const api = new apiGateway.HttpApi(stack, 'ProductApi', {
@@ -47,4 +73,10 @@ api.addRoutes({
   integration: new HttpLambdaIntegration('GetProductListIntegration', getProductById),
   path: '/products/{productId}',
   methods: [apiGateway.HttpMethod.GET],
+});
+
+api.addRoutes({
+  integration: new HttpLambdaIntegration('CreateProductListIntegration', createProduct),
+  path: '/products',
+  methods: [apiGateway.HttpMethod.POST],
 });

@@ -1,9 +1,15 @@
 import { buildResponce } from "../utils";
-import { products } from "../mocks/data"
+import { getProductsList } from "../db/db.services";
 
 export const handler = async (event: any) => {
+  console.log('GetProductsList');
+
   try {
-    return buildResponce(200, products);
+    const result = await getProductsList();
+    console.log(result);
+    
+
+    return buildResponce(200, result);
   } catch (err: any) {
     return buildResponce(500, {
       message: err.message,
