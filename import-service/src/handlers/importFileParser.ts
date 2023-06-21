@@ -27,6 +27,22 @@ const getObjectReadStream = async (bucket: string | undefined, key: any) => {
   return passThroughStream;
 }
 
+const moveFileToParsedFolder = async (srcKey: string) => {
+  const dstKey = srcKey.replace("uploaded/", "parsed/");
+  const copyParams = {
+    Bucket: S3_BUCKET_NAME,
+    CopySource: `${S3_BUCKET_NAME}/${srcKey}`,
+    Key: dstKey,
+  };
+  const deleteParams = {
+    Bucket: S3_BUCKET_NAME,
+    Key: srcKey,
+  };
+
+  await s3Client.copyObject(copyParams);
+  await s3Client.deleteObject(deleteParams);
+};
+
 export const handler = async (event: any) => {
   for (const record of event.Records) {
     const { key } = record.s3.object;
@@ -42,11 +58,18 @@ export const handler = async (event: any) => {
       .on('data', (data) => {
         console.log('CSV record:', data);
       })
-      .on('end', () => {
+      .on('end', async () => {
         console.log('CSV parsing completed for:', key);
       })
       .on('error', (error) => {
         console.error('Error during CSV parsing:', error);
       });
+
+    try {
+      await moveFileToParsedFolder(key);
+      console.log('File moved to parsed folder:', key);
+    } catch (error) {
+      console.error('Error moving file to parsed folder:', error);
+    }
   }
 };
