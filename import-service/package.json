@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "cdk:deploy": "npx cdk deploy --profile aws-rs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -14,15 +14,23 @@
     "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.83.1-alpha.0",
     "@aws-sdk/client-s3": "^3.352.0",
     "@aws-sdk/s3-request-presigner": "^3.352.0",
+    "@types/aws-lambda": "^8.10.119",
     "aws-cdk-lib": "^2.83.1",
+    "aws-lambda": "^1.0.7",
     "constructs": "^10.2.52",
     "csv-parser": "^3.0.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.2",
     "@types/lodash": "^4.14.195",
     "@types/node": "^20.3.1",
     "aws-cdk": "^2.84.0",
-    "dotenv": "^16.1.4"
+    "aws-sdk-client-mock": "^2.1.1",
+    "aws-sdk-mock": "^5.8.0",
+    "dotenv": "^16.1.4",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.1.3"
   }
 }
