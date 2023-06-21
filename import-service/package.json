@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "cdk:deploy": "npx cdk deploy --profile aws-rs",
+    "aws:schema": "aws apigatewayv2 export-api --api-id vaa4ihg2mb --output-type YAML --specification OAS30  --stage-name '$default' swagger.yaml --profile aws-rs",
     "test": "jest"
   },
   "author": "",
