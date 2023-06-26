@@ -65,6 +65,7 @@ export const handler = async (event: any) => {
           QueueUrl: SQS_QUEUE_URL,
           MessageBody: JSON.stringify(data)
         });
+        console.log('sqs params:', command)
         await sqsClient.send(command);
       })
       .on('end', async () => {
