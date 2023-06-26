@@ -3,6 +3,10 @@ import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-al
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -12,6 +16,12 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'ProductServiceStack', {
   env: { region: process.env.PRODUCT_AWS_REGION },
 });
+
+const createProductTopic = new sns.Topic(stack, 'createProductTopic', {
+  displayName: 'Create Product Topic'
+});
+
+createProductTopic.addSubscription(new subs.EmailSubscription(process.env.EMAIL!));
 
 const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
@@ -54,6 +64,28 @@ const createProduct = new NodejsFunction(stack, 'CreateProduct', {
   functionName: 'createProduct',
   entry: 'src/handlers/createProduct.ts',
 });
+
+const catalogBatchProcess = new NodejsFunction(stack, 'CatalogBatchProcess', {
+  ...sharedLambdaProps,
+  functionName: 'catalogBatchProcess',
+  entry: 'src/handlers/catalogBatchProcess.ts',
+  environment: {
+    ...sharedLambdaProps.environment,
+    CREATE_PRODUCT_TOPIC_ARN: createProductTopic.topicArn,
+  }
+});
+
+const queue = new sqs.Queue(stack, 'CatalogItemsQueue', {
+  queueName: 'catalogItemsQueue',
+  visibilityTimeout: cdk.Duration.seconds(30)
+});
+
+catalogBatchProcess.addEventSource(new SqsEventSource(queue, {
+  batchSize: 5
+}));
+
+createProduct.grantInvoke(catalogBatchProcess);
+createProductTopic.grantPublish(catalogBatchProcess);
 
 const api = new apiGateway.HttpApi(stack, 'ProductApi', {
   corsPreflight: {
