@@ -5,6 +5,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3n from "aws-cdk-lib/aws-s3-notifications";
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -16,6 +17,8 @@ const stack = new cdk.Stack(app, 'ImportServiceStack', {
 });
 
 const bucket = s3.Bucket.fromBucketName(stack, 'ImportBucket', process.env.S3_BUCKET_NAME!);
+
+const queue = sqs.Queue.fromQueueArn(stack, 'catalogItemsQueue', `arn:aws:sqs:${process.env.IMPORT_SERVICE_AWS_REGION}:${process.env.AWS_ACCOUNT_ID}:catalogItemsQueue`);
 
 const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
@@ -36,8 +39,14 @@ bucket.grantReadWrite(importProductsFile);
 const importFileParser = new NodejsFunction(stack, 'ImportFileParserLambda', {
   ...sharedLambdaProps,
   functionName: 'importFileParser',
-  entry: 'src/handlers/importFileParser.ts'
+  entry: 'src/handlers/importFileParser.ts',
+  environment: {
+    ...sharedLambdaProps.environment, 
+    SQS_QUEUE_URL: queue.queueUrl,
+  }
 });
+
+queue.grantSendMessages(importFileParser);
 
 bucket.grantReadWrite(importFileParser);
 bucket.addEventNotification(

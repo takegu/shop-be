@@ -1,12 +1,16 @@
 import { S3 } from "@aws-sdk/client-s3";
 import csvParser from "csv-parser";
 import { PassThrough, Readable } from "stream";
+import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 
 const {
   S3_BUCKET_NAME,
+  SQS_QUEUE_URL,
+  IMPORT_SERVICE_AWS_REGION,
 } = process.env;
 
 const s3Client = new S3({});
+const sqsClient = new SQSClient({ region: IMPORT_SERVICE_AWS_REGION });
 
 const getObjectReadStream = async (bucket: string | undefined, key: any) => {
   const passThroughStream = new PassThrough();
@@ -55,8 +59,14 @@ export const handler = async (event: any) => {
 
     readStream
       .pipe(csvParser())
-      .on('data', (data) => {
+      .on('data', async (data) => {
         console.log('CSV record:', data);
+        const command = new SendMessageCommand({
+          QueueUrl: SQS_QUEUE_URL,
+          MessageBody: JSON.stringify(data)
+        });
+        console.log('sqs params:', command)
+        await sqsClient.send(command);
       })
       .on('end', async () => {
         console.log('CSV parsing completed for:', key);
