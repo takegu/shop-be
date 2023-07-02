@@ -30,7 +30,8 @@ const mainFilterPolicy = {
 createProductTopic.addSubscription(
   new subs.EmailSubscription(process.env.EMAIL!, {
     filterPolicy: mainFilterPolicy
-  }));
+  })
+);
 
 const secondFilterPolicy = {
   count: sns.SubscriptionFilter.numericFilter({
