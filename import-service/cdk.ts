@@ -43,7 +43,7 @@ const importFileParser = new NodejsFunction(stack, 'ImportFileParserLambda', {
   functionName: 'importFileParser',
   entry: 'src/handlers/importFileParser.ts',
   environment: {
-    ...sharedLambdaProps.environment, 
+    ...sharedLambdaProps.environment,
     SQS_QUEUE_URL: queue.queueUrl,
   }
 });
@@ -57,7 +57,7 @@ bucket.addEventNotification(
   { prefix: 'uploaded/' }
 );
 
-const basicAuthorizerLambda = lambda.Function.fromFunctionArn(stack, 'BasicAuthorizerLambda', `arn:aws:lambda:eu-west-1:158561360962:function:basicAuthorizer`);
+const basicAuthorizerLambda = lambda.Function.fromFunctionArn(stack, 'BasicAuthorizerLambda', `arn:aws:lambda:${process.env.IMPORT_SERVICE_AWS_REGION}:${process.env.AWS_ACCOUNT_ID}:function:basicAuthorizer`);
 
 const authorizer = new HttpLambdaAuthorizer('basicAuthorizer', basicAuthorizerLambda, {
   responseTypes: [HttpLambdaResponseType.IAM],
