@@ -14,7 +14,7 @@ export const handler = async (event: any) => {
 
   const expectedPassword = process.env[username];
 
-  if (password === expectedPassword) {
+  if (password === expectedPassword && typeof password !== 'undefined' && typeof expectedPassword !== 'undefined') {
     return generatePolicy('Allow', event.methodArn);
   } else {
     return generatePolicy('Deny', event.methodArn);
