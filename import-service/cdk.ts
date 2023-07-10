@@ -20,7 +20,7 @@ const stack = new cdk.Stack(app, 'ImportServiceStack', {
 
 const bucket = s3.Bucket.fromBucketName(stack, 'ImportBucket', process.env.S3_BUCKET_NAME!);
 
-const queue = sqs.Queue.fromQueueArn(stack, 'catalogItemsQueue', `arn:aws:sqs:${process.env.IMPORT_SERVICE_AWS_REGION}:${process.env.AWS_ACCOUNT_ID}:catalogItemsQueue`);
+const queue = sqs.Queue.fromQueueArn(stack, 'CatalogItemsQueue', `arn:aws:sqs:${process.env.IMPORT_SERVICE_AWS_REGION}:${process.env.AWS_ACCOUNT_ID}:CatalogItemsQueue`);
 
 const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
