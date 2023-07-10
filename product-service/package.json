@@ -13,8 +13,8 @@
     "cdk:deploy": "npx cdk deploy --profile aws-rs",
     "cdk:remove": "npx cdk destroy --profile aws-rs",
     "aws:schema": "aws apigatewayv2 export-api --api-id 4pocqddhaf --output-type YAML --specification OAS30  --stage-name '$default' swagger.yaml --profile aws-rs",
-    "rds:create-tables": "ts-node ./src/scripts/db/createTables.ts",
-    "rds:autofill": "ts-node ./src/scripts/db/fillTables.ts"
+    "rds:create-tables": "ts-node ./src/scripts/db/db.createTables.ts",
+    "rds:autofill": "ts-node ./src/scripts/db/db.fillTables.ts"
   },
   "devDependencies": {
     "@aws-sdk/client-sqs": "^3.360.0",

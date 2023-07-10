@@ -8,6 +8,9 @@ export const handler = async (event: any) => {
     if (event?.body) {
       const { title, description, price, count } = JSON.parse(event.body);
 
+      console.log('JSON.parse(event.body)', JSON.parse(event.body));
+      
+
       if (!title || !description || isNaN(Number(price)) || isNaN(Number(count))) {
         return buildResponce(400, 'Invalid parameters');
       }

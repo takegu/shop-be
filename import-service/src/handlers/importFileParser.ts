@@ -6,11 +6,10 @@ import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 const {
   S3_BUCKET_NAME,
   SQS_QUEUE_URL,
-  IMPORT_SERVICE_AWS_REGION,
 } = process.env;
 
 const s3Client = new S3({});
-const sqsClient = new SQSClient({ region: IMPORT_SERVICE_AWS_REGION });
+const sqsClient = new SQSClient({});
 
 const getObjectReadStream = async (bucket: string | undefined, key: any) => {
   const passThroughStream = new PassThrough();

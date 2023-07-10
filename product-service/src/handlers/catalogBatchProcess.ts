@@ -11,7 +11,7 @@ export const handler = async (event: any) => {
       const newProductResponse = await createProduct(record);
 
       console.log('newProductData', newProductResponse);
-      const parsedMessage = JSON.parse(newProductResponse.body).message;
+      const parsedMessage = JSON.parse(newProductResponse.body);
 
       const snsParams = {
         Subject: 'Product Created',

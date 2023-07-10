@@ -1,11 +1,13 @@
 import * as apiGateway from '@aws-cdk/aws-apigatewayv2-alpha';
 import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 import * as cdk from 'aws-cdk-lib';
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3n from "aws-cdk-lib/aws-s3-notifications";
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -18,7 +20,7 @@ const stack = new cdk.Stack(app, 'ImportServiceStack', {
 
 const bucket = s3.Bucket.fromBucketName(stack, 'ImportBucket', process.env.S3_BUCKET_NAME!);
 
-const queue = sqs.Queue.fromQueueArn(stack, 'catalogItemsQueue', `arn:aws:sqs:${process.env.IMPORT_SERVICE_AWS_REGION}:${process.env.AWS_ACCOUNT_ID}:catalogItemsQueue`);
+const queue = sqs.Queue.fromQueueArn(stack, 'CatalogItemsQueue', `arn:aws:sqs:${process.env.IMPORT_SERVICE_AWS_REGION}:${process.env.AWS_ACCOUNT_ID}:CatalogItemsQueue`);
 
 const sharedLambdaProps: Partial<NodejsFunctionProps> = {
   runtime: lambda.Runtime.NODEJS_18_X,
@@ -41,7 +43,7 @@ const importFileParser = new NodejsFunction(stack, 'ImportFileParserLambda', {
   functionName: 'importFileParser',
   entry: 'src/handlers/importFileParser.ts',
   environment: {
-    ...sharedLambdaProps.environment, 
+    ...sharedLambdaProps.environment,
     SQS_QUEUE_URL: queue.queueUrl,
   }
 });
@@ -55,6 +57,12 @@ bucket.addEventNotification(
   { prefix: 'uploaded/' }
 );
 
+const basicAuthorizerLambda = lambda.Function.fromFunctionArn(stack, 'BasicAuthorizerLambda', `arn:aws:lambda:${process.env.IMPORT_SERVICE_AWS_REGION}:${process.env.AWS_ACCOUNT_ID}:function:basicAuthorizer`);
+
+const authorizer = new HttpLambdaAuthorizer('basicAuthorizer', basicAuthorizerLambda, {
+  responseTypes: [HttpLambdaResponseType.IAM],
+});
+
 const api = new apiGateway.HttpApi(stack, 'ImportApi', {
   corsPreflight: {
     allowHeaders: ['*'],
@@ -64,7 +72,8 @@ const api = new apiGateway.HttpApi(stack, 'ImportApi', {
 });
 
 api.addRoutes({
-  integration: new HttpLambdaIntegration('ImportProductFileIntegration', importProductsFile),
   path: '/import',
   methods: [apiGateway.HttpMethod.GET],
+  integration: new HttpLambdaIntegration('ImportProductFileIntegration', importProductsFile),
+  authorizer,
 });

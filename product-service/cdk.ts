@@ -30,7 +30,8 @@ const mainFilterPolicy = {
 createProductTopic.addSubscription(
   new subs.EmailSubscription(process.env.EMAIL!, {
     filterPolicy: mainFilterPolicy
-  }));
+  })
+);
 
 const secondFilterPolicy = {
   count: sns.SubscriptionFilter.numericFilter({
@@ -86,24 +87,36 @@ const createProduct = new NodejsFunction(stack, 'CreateProduct', {
   entry: 'src/handlers/createProduct.ts',
 });
 
+const dlq = new sqs.Queue(stack, 'CatalogItemsDeadLetterQueue', {
+  queueName: 'CatalogItemsDeadLetterQueue',
+});
+
+const queue = new sqs.Queue(stack, 'CatalogItemsQueue', {
+  queueName: 'CatalogItemsQueue',
+  visibilityTimeout: cdk.Duration.seconds(30),
+  deadLetterQueue: {
+    queue: dlq,
+    maxReceiveCount: 1, // Set the maximum receive count to 1
+  },
+});
+
 const catalogBatchProcess = new NodejsFunction(stack, 'CatalogBatchProcess', {
   ...sharedLambdaProps,
   functionName: 'catalogBatchProcess',
   entry: 'src/handlers/catalogBatchProcess.ts',
+  timeout: cdk.Duration.seconds(30),
   environment: {
     ...sharedLambdaProps.environment,
     CREATE_PRODUCT_TOPIC_ARN: createProductTopic.topicArn,
+    SQS_QUEUE_URL: queue.queueUrl,
   }
 });
 
-const queue = new sqs.Queue(stack, 'CatalogItemsQueue', {
-  queueName: 'catalogItemsQueue',
-  visibilityTimeout: cdk.Duration.seconds(30)
-});
-
 catalogBatchProcess.addEventSource(new SqsEventSource(queue, {
-  batchSize: 5
+  batchSize: 5,
 }));
+
+queue.grantConsumeMessages(catalogBatchProcess);
 
 createProduct.grantInvoke(catalogBatchProcess);
 createProductTopic.grantPublish(catalogBatchProcess);
